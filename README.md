@@ -18,6 +18,22 @@
 
 > a docker image that reads a timeseries csv file (queried from influxdb), and uses darts to create a forecast, writing it back to a csv or influx line protocol for processing
 
+## environment variables configuration
+
+PREDICTION_MODEL_EPOCHS=10
+PREDICTION_MODEL=fft
+PREDICTION_SPLIT=0.80
+PREDICTION_COUNT=200
+
+INPUT_FREQUENCY=h
+INPUT_FILENAME=/volume/timeseries.csv
+INPUT_TIMECOl=time
+INPUT_VALUECOL=value
+INPUT_MOVINGAVERAGE=30
+
+OUTPUT_FORMAT=lineformat
+OUTPUT_FILENAME=/volume/prediction.csv
+
 ## Prerequisites
 
 - python >=3.9.13
