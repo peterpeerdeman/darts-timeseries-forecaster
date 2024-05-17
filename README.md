@@ -20,19 +20,19 @@
 
 ## environment variables configuration
 
-PREDICTION_MODEL_EPOCHS=10
-PREDICTION_MODEL=fft
-PREDICTION_SPLIT=0.80
-PREDICTION_COUNT=200
-
-INPUT_FREQUENCY=h
-INPUT_FILENAME=/volume/timeseries.csv
-INPUT_TIMECOl=time
-INPUT_VALUECOL=value
-INPUT_MOVINGAVERAGE=30
-
-OUTPUT_FORMAT=influx
-OUTPUT_FILENAME=/volume/prediction.csv
+|Variable|Type|Default|Description|
+|---|----|----|----|
+|PREDICTION_MODEL|string|fft|Timeseries model to use, either 'fft' or 'nbeats'|
+|PREDICTION_MODEL_EPOCHS|int|30|Number of epochs to train when using nbeats model|
+|PREDICTION_SPLIT|double|0.90|Percentage at which to split the data set into train and test data |
+|PREDICTION_COUNT|int|a third of the number of inputs|Number of prediction timepoints to generate|
+|INPUT_FREQUENCY|datefmt|h|Frequency of time points|
+|INPUT_FILENAME|string|/volume/timeseries.csv|input csv filename to read from|
+|INPUT_TIMECOl|string|time|name of the time column in the csv
+|INPUT_VALUECOL|string|value|name of the value column in the csv|
+|INPUT_MOVINGAVERAGE|int|false|if number is supplied, a moving average is taken to smooth the input |
+|OUTPUT_FORMAT|string|csv|defaults to 'csv' but can be set to 'influx' to product line format txt for easy posting to influxdb with curl|
+|OUTPUT_FILENAME|string|/volume/prediction.csv|location of the prediction output file|
 
 ## Prerequisites
 
