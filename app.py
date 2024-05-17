@@ -9,10 +9,12 @@ from darts.models.forecasting.nbeats import NBEATSModel
 from darts.timeseries import TimeSeries
 import pandas as pd
 
+#import matplotlib.pyplot as plt
+
 # parse environment variables
 prediction_model = os.environ.get('PREDICTION_MODEL', 'fft')
 prediction_model_epochs = os.environ.get('PREDICTION_MODEL_EPOCHS', 30)
-prediction_split = os.environ.get('PREDICTION_SPLIT')
+prediction_split = float(os.environ.get('PREDICTION_SPLIT', 0.80))
 prediction_count = os.environ.get('PREDICTION_COUNT')
 
 # parse file info
@@ -31,13 +33,13 @@ print('valuecol         :', input_valuecol)
 print('frequency        :', input_frequency)
 
 # retrieve and prepare data
-df = pd.read_csv (input_filename);
+df = pd.read_csv(input_filename);
 df['time'] = df['time'].astype('datetime64[ns]')
 df = df.set_index('time')
-#df.drop(df.tail(1).index,inplace=True) # drop last row, to avoid issues with frequency
-
-#alt
-#series = TimeSeries.from_csv(input_filename, time_col='time', value_cols=['value'])#, freq=input_frequency)
+# remove tags (usually empty values)
+df = df.drop(columns='tags')
+# remove empty values
+df = df.dropna()
 
 # apply 0shot machine learning
 series =  TimeSeries.from_dataframe(df, value_cols='value')
@@ -46,17 +48,14 @@ if 'name' in df.columns:
     measurement_name = df['name'].unique()[0] 
     output_measurement_name = measurement_name + '-prediction'
 
-
-
 if input_movingaverage: 
     original = series
     ma = MovingAverageFilter(window=input_movingaverage)
     y_filtered = ma.filter(series)
     series = y_filtered
 
-#series = fill_missing_values(series)
-
 ##TODO: extract to different file / functions
+# predict with nbeats
 if prediction_model == 'nbeats':
     model = NBEATSModel(
             input_chunk_length=30,
@@ -71,10 +70,7 @@ if prediction_model == 'nbeats':
             batch_size=800,
             model_name="nbeats_run",
             )
-    if prediction_split:
-        train, val = series.split_before(float(prediction_split))
-    else:
-        train, val = series.split_before(0.90)
+    train, val = series.split_before(float(prediction_split))
     try:
         model.fit(train, val_series=val, verbose=False)
     except BaseException: 
@@ -86,12 +82,11 @@ if prediction_model == 'nbeats':
     else:
         pred_val = model.predict(n=math.floor(len(series)/3))
 else:
-    if prediction_split:
-        train, val = series.split_before(float(prediction_split))
-    else:
-        train, val = series.split_before(0.80)
-        model = FFT(nr_freqs_to_keep=200)
-        model.fit(train)
+    # predict with FFT
+    train, val = series.split_before(float(prediction_split))
+
+    model = FFT(nr_freqs_to_keep=400)
+    model.fit(train)
     if prediction_count:
         pred_val = model.predict(n=int(prediction_count))
     else:
