@@ -1,6 +1,6 @@
 <h1 align="center">darts-timeseries-forecaster</h1>
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.0.1-blue.svg?cacheSeconds=2592000" />
+  <img alt="Version" src="https://img.shields.io/badge/version-1.0.2-blue.svg?cacheSeconds=2592000" />
   <img src="https://img.shields.io/badge/python-%3E%3D3.9.13-blue.svg" />
   <a href="https://github.com/peterpeerdeman/darts-timeseries-forecaster#readme" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
@@ -51,7 +51,7 @@ python3 app.py
 
 mounts the current folder and runs with docker image
 ```
-docker run --rm -v $PWD:/app -it peterpeerdeman/darts-timeseries-forecaster:1.0.0 python app.py
+docker run --rm -v $PWD:/app -it peterpeerdeman/darts-timeseries-forecaster:1.0.2 python app.py
 ```
 
 ## Run tests
@@ -71,7 +71,7 @@ docker run --rm -v $PWD:/app -it peterpeerdeman/darts-timeseries-forecaster:1.0.
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/peterpeerdeman/telegraf-pvoutput/issues). 
+Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/peterpeerdeman/darts-timeseries-forecaster/issues). 
 
 ## Show your support
 
