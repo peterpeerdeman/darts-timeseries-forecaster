@@ -31,7 +31,7 @@ INPUT_TIMECOl=time
 INPUT_VALUECOL=value
 INPUT_MOVINGAVERAGE=30
 
-OUTPUT_FORMAT=lineformat
+OUTPUT_FORMAT=influx
 OUTPUT_FILENAME=/volume/prediction.csv
 
 ## Prerequisites
