@@ -23,6 +23,7 @@
 |Variable|Type|Default|Description|
 |---|----|----|----|
 |PREDICTION_MODEL|string|fft|Timeseries model to use, either 'fft' or 'nbeats'|
+|PREDICTION_FFT_KEEPFREQ|int|100|number of freqs to use when using fft model|
 |PREDICTION_MODEL_EPOCHS|int|30|Number of epochs to train when using nbeats model|
 |PREDICTION_SPLIT|double|0.90|Percentage at which to split the data set into train and test data |
 |PREDICTION_COUNT|int|a third of the number of inputs|Number of prediction timepoints to generate|

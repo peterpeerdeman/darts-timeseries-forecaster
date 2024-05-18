@@ -13,12 +13,13 @@ import pandas as pd
 
 # parse environment variables
 prediction_model = os.environ.get('PREDICTION_MODEL', 'fft')
+prediction_fft_keepfreq = os.environ.get('PREDICTION_FFT_KEEPFREQ', 100)
 prediction_model_epochs = os.environ.get('PREDICTION_MODEL_EPOCHS', 30)
 prediction_split = float(os.environ.get('PREDICTION_SPLIT', 0.80))
 prediction_count = os.environ.get('PREDICTION_COUNT')
 
 # parse file info
-input_frequency = os.environ.get('INPUT_FREQUENCY', 'h')
+input_frequency = os.environ.get('INPUT_FREQUENCY', '10m')
 input_filename = os.environ.get('INPUT_FILENAME', '/volume/timeseries.csv')
 input_timecol = os.environ.get('INPUT_TIMECOl', 'time')
 input_valuecol = os.environ.get('INPUT_VALUECOL', 'value')
@@ -39,10 +40,10 @@ df = df.set_index('time')
 # remove tags (usually empty values)
 df = df.drop(columns='tags')
 # remove empty values
-df = df.dropna()
+#df = df.dropna()
 
 # apply 0shot machine learning
-series =  TimeSeries.from_dataframe(df, value_cols='value')
+series =  TimeSeries.from_dataframe(df, value_cols='value' , fill_missing_dates=True, freq=input_frequency)
 output_measurement_name = 'timeseries-prediction'
 if 'name' in df.columns:
     measurement_name = df['name'].unique()[0] 
@@ -85,7 +86,7 @@ else:
     # predict with FFT
     train, val = series.split_before(float(prediction_split))
 
-    model = FFT(nr_freqs_to_keep=400)
+    model = FFT(required_matches={'hour'}, nr_freqs_to_keep=prediction_fft_keepfreq)
     model.fit(train)
     if prediction_count:
         pred_val = model.predict(n=int(prediction_count))
