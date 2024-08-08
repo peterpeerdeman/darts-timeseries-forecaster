@@ -13,13 +13,13 @@ import pandas as pd
 
 # parse environment variables
 prediction_model = os.environ.get('PREDICTION_MODEL', 'fft')
-prediction_fft_keepfreq = os.environ.get('PREDICTION_FFT_KEEPFREQ', 100)
+prediction_fft_keepfreq = os.environ.get('PREDICTION_FFT_KEEPFREQ', None)
 prediction_model_epochs = os.environ.get('PREDICTION_MODEL_EPOCHS', 30)
 prediction_split = float(os.environ.get('PREDICTION_SPLIT', 0.80))
 prediction_count = os.environ.get('PREDICTION_COUNT')
 
 # parse file info
-input_frequency = os.environ.get('INPUT_FREQUENCY', '10m')
+input_frequency = os.environ.get('INPUT_FREQUENCY', None)
 input_filename = os.environ.get('INPUT_FILENAME', '/volume/timeseries.csv')
 input_timecol = os.environ.get('INPUT_TIMECOl', 'time')
 input_valuecol = os.environ.get('INPUT_VALUECOL', 'value')
