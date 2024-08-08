@@ -1,20 +1,21 @@
 import math
 import os
-import sys
 
 from darts.metrics import mae
 from darts.models.filtering.moving_average_filter import MovingAverageFilter
 from darts.models.forecasting.fft import FFT
+from darts.models import StatsForecastAutoARIMA
 from darts.models.forecasting.nbeats import NBEATSModel
 from darts.timeseries import TimeSeries
 import pandas as pd
 
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 # parse environment variables
 prediction_model = os.environ.get('PREDICTION_MODEL', 'fft')
 prediction_fft_keepfreq = os.environ.get('PREDICTION_FFT_KEEPFREQ', None)
 prediction_model_epochs = os.environ.get('PREDICTION_MODEL_EPOCHS', 30)
+prediction_arima_season_length = os.environ.get('PREDICTION_ARIMA_SEASON_LENGTH', 30)
 prediction_split = float(os.environ.get('PREDICTION_SPLIT', 0.80))
 prediction_count = os.environ.get('PREDICTION_COUNT')
 
@@ -55,38 +56,47 @@ if input_movingaverage:
     y_filtered = ma.filter(series)
     series = y_filtered
 
+# prepare training data
+train, val = series.split_before(float(prediction_split))
+
 ##TODO: extract to different file / functions
+
 # predict with nbeats
 if prediction_model == 'nbeats':
     model = NBEATSModel(
-            input_chunk_length=30,
-            output_chunk_length=30,
-            generic_architecture=True,
-            num_stacks=10,
-            num_blocks=1,
-            num_layers=4,
-            layer_widths=512,
-            n_epochs=int(prediction_model_epochs),
-            nr_epochs_val_period=1,
-            batch_size=800,
-            model_name="nbeats_run",
-            )
-    train, val = series.split_before(float(prediction_split))
-    try:
-        model.fit(train, val_series=val, verbose=False)
-    except BaseException: 
-        print(BaseException)
-        print("error fitting model, try inputting more data", file=sys.stderr)
-        quit()
+        input_chunk_length=30,
+        output_chunk_length=30,
+        generic_architecture=True,
+        num_stacks=10,
+        num_blocks=1,
+        num_layers=4,
+        layer_widths=512,
+        n_epochs=int(prediction_model_epochs),
+        nr_epochs_val_period=1,
+        batch_size=800,
+        model_name="nbeats_run",
+    )
+    model.fit(train, val_series=val, verbose=False)
+    if prediction_count:
+        pred_val = model.predict(n=int(prediction_count))
+    else:
+        pred_val = model.predict(n=math.floor(len(series)/3))
+elif prediction_model == 'autoarima':
+    # predict with STATSFORECASTAUTOARIMA
+    model = StatsForecastAutoARIMA(
+        season_length=prediction_arima_season_length,
+    )
+    model.fit(train)
     if prediction_count:
         pred_val = model.predict(n=int(prediction_count))
     else:
         pred_val = model.predict(n=math.floor(len(series)/3))
 else:
     # predict with FFT
-    train, val = series.split_before(float(prediction_split))
-
-    model = FFT(required_matches={'hour'}, nr_freqs_to_keep=prediction_fft_keepfreq)
+    model = FFT(
+        required_matches={'hour'}, 
+        nr_freqs_to_keep=prediction_fft_keepfreq
+    )
     model.fit(train)
     if prediction_count:
         pred_val = model.predict(n=int(prediction_count))
@@ -94,6 +104,14 @@ else:
         pred_val = model.predict(len(val)*2)
 
 print("MAE:", mae(pred_val, val))
+
+### DEBUG
+#train.plot(label="train")
+#val.plot(label="val")
+#pred_val.plot(label="prediction")
+#plt.show()
+#exit
+
 if output_format == 'influx':
     lines = []
     for i in range(len(pred_val)):
@@ -106,8 +124,3 @@ if output_format == 'influx':
             f.write(line + '\n')
 else:
     pred_val.to_csv(path_or_buf=output_filename, date_format='%s%f000')
-
-#train.plot(label="train")
-#val.plot(label="val")
-#pred_val.plot(label="prediction")
-#plt.show()
