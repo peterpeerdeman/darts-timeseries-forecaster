@@ -22,12 +22,13 @@
 
 |Variable|Type|Default|Description|
 |---|----|----|----|
-|PREDICTION_MODEL|string|fft|Timeseries model to use, either 'fft' or 'nbeats'|
+|PREDICTION_MODEL|string|fft|Timeseries model to use, either 'fft', 'autoarima' or 'nbeats'|
 |PREDICTION_FFT_KEEPFREQ|int|100|number of freqs to use when using fft model|
 |PREDICTION_MODEL_EPOCHS|int|30|Number of epochs to train when using nbeats model|
+|PREDICTION_ARIMA_SEASON_LENGTH|30|Length of the periods that is used for analysis |
 |PREDICTION_SPLIT|double|0.90|Percentage at which to split the data set into train and test data |
 |PREDICTION_COUNT|int|a third of the number of inputs|Number of prediction timepoints to generate|
-|INPUT_FREQUENCY|datefmt|h|Frequency of time points|
+|INPUT_FREQUENCY|datefmt|None|Frequency of time points, use D for calendar Day (check [docs](https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases)  |
 |INPUT_FILENAME|string|/volume/timeseries.csv|input csv filename to read from|
 |INPUT_TIMECOl|string|time|name of the time column in the csv
 |INPUT_VALUECOL|string|value|name of the value column in the csv|
