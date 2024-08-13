@@ -1,10 +1,10 @@
-FROM arm64v8/python:3.9.19-slim-bullseye as base
+FROM python:3.9.19 as base
 
 RUN mkdir /app
 COPY ./requirements.txt /app/requirements.txt
 WORKDIR /app
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
 

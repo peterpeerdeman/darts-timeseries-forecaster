@@ -19,6 +19,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/arm64/v8
+          platforms: linux/arm64/v8, linux/amd64
           push: true
           tags: peterpeerdeman/darts-timeseries-forecaster:latest, peterpeerdeman/darts-timeseries-forecaster:${{ github.sha }}
