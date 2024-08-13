@@ -22,9 +22,8 @@
 
 |Variable|Type|Default|Description|
 |---|----|----|----|
-|PREDICTION_MODEL|string|fft|Timeseries model to use, either 'fft', 'autoarima' or 'nbeats'|
+|PREDICTION_MODEL|string|fft|Timeseries model to use, either 'fft' or 'autoarima'|
 |PREDICTION_FFT_KEEPFREQ|int|100|number of freqs to use when using fft model|
-|PREDICTION_MODEL_EPOCHS|int|30|Number of epochs to train when using nbeats model|
 |PREDICTION_ARIMA_SEASON_LENGTH|30|Length of the periods that is used for analysis |
 |PREDICTION_SPLIT|double|0.90|Percentage at which to split the data set into train and test data |
 |PREDICTION_COUNT|int|a third of the number of inputs|Number of prediction timepoints to generate|
@@ -32,7 +31,6 @@
 |INPUT_FILENAME|string|/volume/timeseries.csv|input csv filename to read from|
 |INPUT_TIMECOl|string|time|name of the time column in the csv
 |INPUT_VALUECOL|string|value|name of the value column in the csv|
-|INPUT_MOVINGAVERAGE|int|false|if number is supplied, a moving average is taken to smooth the input |
 |OUTPUT_FORMAT|string|csv|defaults to 'csv' but can be set to 'influx' to product line format txt for easy posting to influxdb with curl|
 |OUTPUT_FILENAME|string|/volume/prediction.csv|location of the prediction output file|
 
@@ -53,7 +51,7 @@ python3 app.py
 
 mounts the current folder and runs with docker image
 ```
-docker run --rm -v $PWD:/app -it peterpeerdeman/darts-timeseries-forecaster:1.0.2 python app.py
+docker run --rm -v $PWD:/app -it peterpeerdeman/darts-timeseries-forecaster:latest python app.py
 ```
 
 ## Run tests
