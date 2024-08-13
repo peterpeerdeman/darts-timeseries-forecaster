@@ -1,4 +1,4 @@
-FROM arm64v8/python:3.8.19-slim-bullseye as base
+FROM arm64v8/python:3.9.19-slim-bullseye as base
 
 RUN mkdir /app
 COPY ./requirements.txt /app/requirements.txt
