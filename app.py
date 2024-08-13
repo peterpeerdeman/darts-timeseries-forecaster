@@ -2,19 +2,15 @@ import math
 import os
 
 from darts.metrics import mae
-#from darts.models.filtering.moving_average_filter import MovingAverageFilter
 from darts.models.forecasting.fft import FFT
 from darts.models import StatsForecastAutoARIMA
-#from darts.models.forecasting.nbeats import NBEATSModel
 from darts.timeseries import TimeSeries
 import pandas as pd
 
-import matplotlib.pyplot as plt
 
 # parse environment variables
 prediction_model = os.environ.get('PREDICTION_MODEL', 'fft')
 prediction_fft_keepfreq = os.environ.get('PREDICTION_FFT_KEEPFREQ', None)
-# prediction_model_epochs = os.environ.get('PREDICTION_MODEL_EPOCHS', 30)
 prediction_arima_season_length = os.environ.get('PREDICTION_ARIMA_SEASON_LENGTH', 30)
 prediction_split = float(os.environ.get('PREDICTION_SPLIT', 0.80))
 prediction_count = os.environ.get('PREDICTION_COUNT')
@@ -24,7 +20,6 @@ input_frequency = os.environ.get('INPUT_FREQUENCY', None)
 input_filename = os.environ.get('INPUT_FILENAME', '/volume/timeseries.csv')
 input_timecol = os.environ.get('INPUT_TIMECOl', 'time')
 input_valuecol = os.environ.get('INPUT_VALUECOL', 'value')
-# input_movingaverage = int(os.environ.get('INPUT_MOVINGAVERAGE', False))
 
 output_filename = os.environ.get('OUTPUT_FILENAME', '/volume/prediction.csv')
 output_format = os.environ.get('OUTPUT_FORMAT', 'csv')
@@ -50,37 +45,11 @@ if 'name' in df.columns:
     measurement_name = df['name'].unique()[0] 
     output_measurement_name = measurement_name + '-prediction'
 
-# if input_movingaverage: 
-#     original = series
-#     ma = MovingAverageFilter(window=input_movingaverage)
-#     y_filtered = ma.filter(series)
-#     series = y_filtered
-
 # prepare training data
 train, val = series.split_before(float(prediction_split))
 
 ##TODO: extract to different file / functions
 
-# predict with nbeats
-# if prediction_model == 'nbeats':
-#     model = NBEATSModel(
-#         input_chunk_length=30,
-#         output_chunk_length=30,
-#         generic_architecture=True,
-#         num_stacks=10,
-#         num_blocks=1,
-#         num_layers=4,
-#         layer_widths=512,
-#         n_epochs=int(prediction_model_epochs),
-#         nr_epochs_val_period=1,
-#         batch_size=800,
-#         model_name="nbeats_run",
-#     )
-#     model.fit(train, val_series=val, verbose=False)
-#     if prediction_count:
-#         pred_val = model.predict(n=int(prediction_count))
-#     else:
-#         pred_val = model.predict(n=math.floor(len(series)/3))
 if prediction_model == 'autoarima':
     # predict with STATSFORECASTAUTOARIMA
     model = StatsForecastAutoARIMA(
@@ -106,7 +75,7 @@ else:
 print("MAE:", mae(pred_val, val))
 
 ### DEBUG
-
+# import matplotlib.pyplot as plt
 # train.plot(label="train")
 # val.plot(label="val")
 # pred_val.plot(label="prediction")
